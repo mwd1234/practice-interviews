@@ -29,6 +29,8 @@
 
 -- The result format is in the following example.
 
-SELECT customer_id, COUNT(*) 
-FROM Visits v INNER JOIN Transactions t
+SELECT customer_id, COUNT(DISTINCT v.visit_id) AS count_no_trans
+FROM Visits v LEFT JOIN Transactions t 
     ON v.visit_id = t.visit_id
+WHERE t.transaction_id IS NULL
+GROUP BY customer_id;

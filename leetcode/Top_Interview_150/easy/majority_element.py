@@ -14,6 +14,6 @@ def majority_element(nums: list[int]) -> int:
         if v > len(nums) / 2: 
             return k
 
-nums = [2,2,1,1,1,2,2]
+nums = [2,2,1,1,1,2,2] 
 nums = [3,2,3]
 print(majority_element(nums))

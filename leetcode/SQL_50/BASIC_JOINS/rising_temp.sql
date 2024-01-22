@@ -17,5 +17,7 @@
 
 -- The result format is in the following example.
 
-SELECT id
-FROM weather
+SELECT w1.id as Id
+FROM Weather w1 INNER JOIN Weather w2 
+    ON w1.recordDate = w2.recordDate + 1
+WHERE w1.temperature > w2.temperature OR w2.id IS NULL;
