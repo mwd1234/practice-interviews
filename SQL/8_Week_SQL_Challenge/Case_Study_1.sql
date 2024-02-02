@@ -62,7 +62,7 @@ FROM
     ranked_sales r
 JOIN 
     dannys_diner.menu m ON r.product_id = m.product_id
-WHERE 
+WHERE  
     r.rank = 1
 ORDER BY r.customer_id;
 
