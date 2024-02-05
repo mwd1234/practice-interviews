@@ -117,7 +117,6 @@ GROUP BY manufacturer
 ORDER BY total_losses DESC
 
 -- Your team at JPMorgan Chase is preparing to launch a new credit card, and to gain some insights, you're analyzing how many credit cards were issued each month.
-
 -- Write a query that outputs the name of each credit card and the difference in the number of issued cards between the month with 
 -- the highest issuance cards and the lowest issuance. Arrange the results based on the largest disparity.
 
@@ -128,7 +127,6 @@ ORDER BY MAX(issued_amount) - MIN(issued_amount) DESC
 
 -- Display the stocks which had "big-mover months", and how many of those months they had. Order your results from the stocks with the most, to least, "big-mover months".
 -- A "big-mover month" is when a stock closes up or down by greater than 10% compared to the price it opened at.
-
 -- For example, when COVID hit and e-commerce became the new normal, Amazon stock in April 2020 had a big-mover month 
 -- because the price shot up from $96.65 per share at open to $123.70 at close – a 28% increase!
 
@@ -143,8 +141,112 @@ ORDER BY counter DESC
 -- For all Merck drugs, output the drug name, and the unit cost for each drug, rounded up to the nearest dollar. Order it from cheapest to most expensive drug.
 -- Hint: Unit cost is defined as the total sales divided by the units sold.
 
-
 SELECT drug, CEIL((total_sales / units_sold)) AS unit_cost 
 FROM pharmacy_sales
 WHERE manufacturer = 'Merck'
 ORDER BY unit_cost;
+
+-- Tesla is investigating production bottlenecks and they need your help to extract the relevant data. Write a query to determine which parts have begun the assembly process but are not yet finished.
+-- Assumptions:
+-- parts_assembly table contains all parts currently in production, each at varying stages of the assembly process.
+-- An unfinished part is one that lacks a finish_date.
+-- This question is straightforward, so let's approach it with simplicity in both thinking and solution.
+-- Effective April 11th 2023, the problem statement and assumptions were updated to enhance clarity.
+
+SELECT part, assembly_step
+FROM parts_assembly
+WHERE finish_date IS NULL;
+
+
+-- Delve into the Marvel Avengers dataset and write a query to categorize the superheroes based on their average likes as follows:
+-- Super Likes: Superheroes with an average likes count greater than or equal to 15,000.
+-- Good Likes: Superheroes with an average likes count between 5,000 and 14,999 (inclusive).
+-- Low Likes: Superheroes with an average likes count less than 5,000.
+-- Display the superhero's character name, platform, average likes, and the corresponding likes category.
+
+SELECT
+  actor, 
+  character, 
+  platform, 
+  avg_likes,
+  CASE 
+    WHEN avg_likes >= 15000 THEN 'Super Likes'
+    WHEN avg_likes BETWEEN 5000 AND 14999 THEN 'Good Likes'
+    ELSE 'Low Likes'
+  END AS like_rating
+FROM marvel_avengers 
+ORDER BY avg_likes DESC;
+
+
+-- This is the same question as problem #3 in the SQL Chapter of Ace the Data Science Interview!
+-- Assume you're given the table on user viewership categorised by device type where the three types are laptop, tablet, and phone.
+-- Write a query that calculates the total viewership for laptops and mobile devices where mobile is defined as the sum of tablet and phone viewership. 
+-- Output the total viewership for laptops as laptop_reviews and the total viewership for mobile devices as mobile_views.
+
+SELECT 
+    SUM(CASE WHEN device_type = 'laptop' THEN 1 ELSE 0 END) AS laptop_views,
+    SUM(CASE WHEN device_type IN ('phone', 'tablet') THEN 1 ELSE 0 END) AS mobile_views
+FROM viewership;
+
+-- Assume you're given the tables containing info about Robinhood users, and the stock trades they placed.
+-- Use a JOIN to output all the information from the trades table joined to the users table.
+
+SELECT * 
+FROM trades t INNER JOIN users u
+  ON t.user_id = u.user_id;
+
+
+-- Assume you're given the tables containing completed trade orders and user details in a Robinhood trading system.
+-- Write a query to retrieve the top three cities that have the highest number of completed trade orders listed in descending order. 
+-- Output the city name and the corresponding number of completed trade orders.
+
+SELECT 
+  city, 
+  COUNT(*)
+FROM trades t INNER JOIN users u
+  ON t.user_id = u.user_id
+WHERE status = 'Completed'
+GROUP BY city 
+ORDER BY COUNT(*) DESC
+LIMIT 3;
+
+-- Assume you're given two tables containing data about Facebook Pages and their respective likes (as in "Like a Facebook Page").
+
+-- Write a query to return the IDs of the Facebook pages that have zero likes. The output should be sorted in ascending order based on the page IDs.
+
+SELECT p.page_id
+FROM pages p LEFT JOIN page_likes pl
+  ON p.page_id = pl.page_id
+WHERE pl.liked_date IS NULL
+ORDER BY p.page_id;
+
+
+-- Given a table of Facebook posts, for each user who posted at least twice in 2021, write a query to find the number of days between each user’s 
+-- first post of the year and last post of the year in the year 2021. Output the user and number of the days between each user's first and last post.
+
+SELECT 
+    user_id,
+    MAX(post_date::DATE) - MIN(post_date::DATE) AS days_between
+FROM 
+    posts
+WHERE 
+    EXTRACT(YEAR FROM post_date) = 2021
+GROUP BY 
+    user_id
+HAVING 
+    COUNT(*) >= 2;
+
+-- Assume you're given tables with information about TikTok user sign-ups and confirmations through email and text. 
+-- New users on TikTok sign up using their email addresses, and upon sign-up, each user receives a text message confirmation to activate their account.
+
+-- Write a query to display the user IDs of those who did not confirm their sign-up on the first day, but confirmed on the second day.
+
+-- Definition:
+
+-- action_date refers to the date when users activated their accounts and confirmed their sign-up through text messages.
+
+SELECT user_id
+FROM emails e INNER JOIN texts t 
+  ON e.email_id = t.email_id
+WHERE t.action_date = e.signup_date + INTERVAL '1 day'
+AND signup_action = 'Confirmed'
