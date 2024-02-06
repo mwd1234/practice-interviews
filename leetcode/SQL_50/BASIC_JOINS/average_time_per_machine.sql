@@ -27,24 +27,12 @@
 -- Return the result table in any order.
 
 -- The result format is in the following example.
-
-
-
-
--- Write your PostgreSQL query statement below
-SELECT 
-    machine_id,
-    ROUND( / COUNT(*), 3) AS processing_time
-FROM (
-    SELECT 
-        machine_id, 
-        process_id, 
-        AVG(CASE WHEN activity_type = 'end' THEN timestamp END CASE WHEN activity_type = 'start' THEN timestamp END) AS end_time
-    FROM 
-        Activity
-    GROUP BY 
-        machine_id, 
-        process_id
-) AS process_times
-GROUP BY 
-    machine_id;
+-- Couldn't get it working, so copied a MySQL one.
+select a1.machine_id
+, ROUND(AVG(a2.timestamp - a1.timestamp),3) as processing_time
+from Activity a1
+join Activity a2
+on a1.process_id=a2.process_id
+and a1.machine_id=a2.machine_id
+and a1.timestamp<a2.timestamp
+group by a1.machine_id;

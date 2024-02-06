@@ -66,5 +66,4 @@
 SELECT p.project_id, ROUND(AVG(e.experience_years), 2) AS average_years
 FROM Employee e 
 INNER JOIN Project p ON e.employee_id = p.employee_id
-WHERE p.project_id IN (SELECT DISTINCT(project_id) FROM Project)
 GROUP BY p.project_id

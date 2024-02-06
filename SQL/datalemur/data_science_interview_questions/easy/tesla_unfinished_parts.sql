@@ -6,3 +6,7 @@
 -- parts_assembly table contains all parts currently in production, each at varying stages of the assembly process.
 -- An unfinished part is one that lacks a finish_date.
 -- This question is straightforward, so let's approach it with simplicity in both thinking and solution.
+
+SELECT part, assembly_step
+FROM parts_assembly
+WHERE finish_date IS NULL;
